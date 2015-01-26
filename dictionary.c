@@ -1,7 +1,7 @@
 #include "dictionary.h"
 #include "csapp.c"
 
-//init_dictionary initializes the hashtable and malloc's a front sentinel node. I admit I didn't like the style of using a back sentinel. It seemed like too much initialization as opposed to omitting two if statements in the add and delete functions, not to mention it provides a convenient way to right the for loop in the lookup function. Maybe that's considered a code gymnastic though.
+//init_dictionary initializes the hashtable and malloc's a front sentinel node.
 
 void init_dictionary(dictionary_t *dict) {
 
