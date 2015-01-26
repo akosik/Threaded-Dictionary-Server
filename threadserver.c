@@ -2,6 +2,7 @@
 
 #include "dictionary.c"
 
+//define data structure to pass to threads
 typedef struct _session_t {
 
   dictionary_t *dictionary;
@@ -12,6 +13,7 @@ typedef struct _session_t {
 
 } session_t;
 
+//define client handle session
 void *dictionary_session(void *arg) {
   
   size_t n;
@@ -64,16 +66,20 @@ int main(int argc, char **argv)
   struct hostent *hp;
   session_t *sesh;
 
+  //check command line arguments
   if (argc != 2) {
     fprintf(stderr, "usage: %s <port>\n", argv[0]);
     exit(0);
   }
+  //convert command line argument of port number to integer 
   port = atoi(argv[1]);
   
+  //declare dictionary struct and initialize
   static dictionary_t dict;
   printf("Initializing nameserver...\n");
   init_dictionary(&dict);
   
+  //establish client connections, allocate memory for thread data struct
   listenfd = Open_listenfd(port);
   while (1) {
 
@@ -84,9 +90,11 @@ int main(int argc, char **argv)
     sesh->connfd = Accept(listenfd, (SA *)&(sesh->clientaddr), &clientlen);
     hp = Gethostbyaddr((const char *)&(sesh->clientaddr.sin_addr.s_addr),sizeof(sesh->clientaddr.sin_addr.s_addr), AF_INET);
     printf("Connection with %s.\n", hp->h_name);
-
+    
+    //initialize the buffer, see csapp.c for function definition
     Rio_readinitb(&sesh->rio,sesh->connfd);
 
+    //spawn client thread
     Pthread_create(&sesh->tid, NULL, dictionary_session, sesh);
     
   }
